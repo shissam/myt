@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 
 static int debug = 0;
+static int recurse = 0;
 static int nlines = 10;
 static char *ifile = NULL;
 static off_t totalread = 0;
@@ -291,10 +292,14 @@ int main (int argc, char *argv[])
   int ifd = -1;
   struct stat statbuf;
 
-  while ((op = getopt (argc, argv, "n:d")) != -1)
+  while ((op = getopt (argc, argv, "n:dr")) != -1)
   {
     switch (op)
     {
+      case 'r':
+        recurse = 1;
+        break;
+
       case 'd':
         debug = 1;
         break;
@@ -366,11 +371,13 @@ int main (int argc, char *argv[])
   {
     if (debug)
       fprintf (stderr, "file is '%ld' bytes long\n", statbuf.st_size);
-#if 1
-    if ((rc = myt_iterative (ifd, nlines+1, statbuf.st_size)) < 0)
-#else
-    if ((rc = myt_recursive (ifd, nlines+1, statbuf.st_size)) < 0)
-#endif
+
+    if (recurse)
+      rc = myt_recursive (ifd, nlines+1, statbuf.st_size);
+    else
+      rc = myt_iterative (ifd, nlines+1, statbuf.st_size);
+
+    if (rc < 0)
     {
       fprintf (stderr, "%s: mytail failed\n", argv[0]);
     }
