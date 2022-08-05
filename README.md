@@ -27,3 +27,4 @@ bash$
 - [ ] 16-bit character sets
 - [ ] `\r\n` newlines
 
+circa 202208
